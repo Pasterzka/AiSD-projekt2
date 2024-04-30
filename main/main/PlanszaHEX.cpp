@@ -12,7 +12,7 @@ PlanszaHEX::PlanszaHEX()
 	this->liczbaPol = 0;
 
 	std::string input;
-	std::cin >> input; // skip "---"
+	//std::cin >> input; // skip "---"
 
 
 	int i = 0;
@@ -87,6 +87,7 @@ PlanszaHEX::PlanszaHEX()
 		}
 	} while (input != "---"); //koniec hexa
 	this->liczbaPustePola = plansza.size() * plansza.size() - liczbaNiebieskichPionkow - liczbaCzerwonychPionkow;
+	this->rozmiar = plansza.size();
 }
 
 int PlanszaHEX::getLiczbaCzerownychPionkow()
@@ -133,7 +134,7 @@ int dy[] = { 0, -1, -1, 1, 1, 0 };
 bool PlanszaHEX::CzerwonyDFS(int x, int y)
 {
 	// Jeœli dotarliœmy do kolumny max, zwracamy true
-	if (x == plansza.size()-1) {
+	if (x == rozmiar-1) {
 		return true;
 	}
 
@@ -146,7 +147,7 @@ bool PlanszaHEX::CzerwonyDFS(int x, int y)
 		int ny = y + dy[i];
 
 		// Sprawdzenie, czy s¹siednia komórka mieœci siê w granicach i czy nie zosta³a odwiedzona
-		if (nx >= 0 && nx < plansza.size() && ny >= 0 && ny < (*plansza[0]).size() && !(*plansza[nx])[ny]->getOdwiedzony() && (*plansza[nx])[ny]->getPionek() == 1) {
+		if (nx >= 0 && nx < rozmiar && ny >= 0 && ny < rozmiar && !(*plansza[nx])[ny]->getOdwiedzony() && (*plansza[nx])[ny]->getPionek() == 1) {
 			// Rekurencyjne wywo³anie DFS dla s¹siedniej komórki
 			if (CzerwonyDFS(nx, ny)) {
 				return true;
@@ -161,7 +162,7 @@ bool PlanszaHEX::CzerwonyDFS(int x, int y)
 bool PlanszaHEX::NiebieskiDFS(int x, int y)
 {
 	// Jeœli dotarliœmy do wiersza max, zwracamy true
-	if (y == plansza.size()-1) {
+	if (y == rozmiar-1) {
 		return true;
 	}
 
@@ -173,7 +174,7 @@ bool PlanszaHEX::NiebieskiDFS(int x, int y)
 		int nx = x + dx[i];
 		int ny = y + dy[i];
 		// Sprawdzenie, czy s¹siednia komórka mieœci siê w granicach i czy nie zosta³a odwiedzona
-		if (nx >= 0 && nx < plansza.size() && ny >= 0 && ny < (*plansza[0]).size() && !(*plansza[nx])[ny]->getOdwiedzony() && (*plansza[nx])[ny]->getPionek() == 2) {
+		if (nx >= 0 && nx < rozmiar && ny >= 0 && ny < rozmiar && !(*plansza[nx])[ny]->getOdwiedzony() && (*plansza[nx])[ny]->getPionek() == 2) {
 			// Rekurencyjne wywo³anie DFS dla s¹siedniej komórki
 			if (NiebieskiDFS(nx, ny)) {
 				return true;
@@ -190,8 +191,7 @@ int PlanszaHEX::GraSkonczona()
 	ResetOdwiedziny();
 	if (CzyPlanszaPoprawna())
 	{
-		int RC = plansza.size();
-		for (int i = 0; i < RC; ++i) {
+		for (int i = 0; i < rozmiar; ++i) {
 			if ((*plansza[0])[i]->getPionek() == czerwony && !(*plansza[0])[i]->getOdwiedzony())
 			{
 				if (CzerwonyDFS(0,i))
@@ -201,7 +201,7 @@ int PlanszaHEX::GraSkonczona()
 			}
 		}
 
-		for (int i = 0; i < RC; ++i) {
+		for (int i = 0; i < rozmiar; ++i) {
 			if ((*plansza[i])[0]->getPionek() == niebieski && !(*plansza[i])[0]->getOdwiedzony()) {
 				if (NiebieskiDFS( i, 0)) {
 					return 2;
@@ -217,8 +217,7 @@ int PlanszaHEX::GraSkonczona()
 bool PlanszaHEX::NiebiskiWygral()
 {
 	ResetOdwiedziny();
-	int RC = plansza.size();
-	for (int i = 0; i < RC; ++i) {
+	for (int i = 0; i < rozmiar; ++i) {
 		if ((*plansza[i])[0]->getPionek() == niebieski && !(*plansza[i])[0]->getOdwiedzony()) {
 			if (NiebieskiDFS(i, 0)) {
 				return true;
@@ -231,8 +230,7 @@ bool PlanszaHEX::NiebiskiWygral()
 bool PlanszaHEX::CzerwonyWygral()
 {
 	ResetOdwiedziny();
-	int RC = plansza.size();
-	for (int i = 0; i < RC; ++i) {
+	for (int i = 0; i < rozmiar; ++i) {
 		if ((*plansza[0])[i]->getPionek() == czerwony && !(*plansza[0])[i]->getOdwiedzony())
 		{
 			if (CzerwonyDFS(0, i))
@@ -247,13 +245,13 @@ bool PlanszaHEX::CzerwonyWygral()
 bool PlanszaHEX::CzyPlanszaMozliwa()
 {
 	int gra = GraSkonczona();
-	if (CzyPlanszaPoprawna() && (GraSkonczona() == niebieski && Tura() == czerwony || GraSkonczona() == czerwony && Tura() == niebieski || GraSkonczona() == 0))
+	if (CzyPlanszaPoprawna() && (gra == niebieski && Tura() == czerwony || gra == czerwony && Tura() == niebieski || gra == 0))
 	{
 
 		int kolor;
-		if (GraSkonczona() != 0)
+		if (gra != 0)
 		{
-			if (GraSkonczona() == czerwony)
+			if (gra == czerwony)
 			{
 				kolor = czerwony;
 			}
@@ -261,9 +259,9 @@ bool PlanszaHEX::CzyPlanszaMozliwa()
 				kolor = niebieski;
 			}
 
-			for (int i = 0; i < plansza.size(); i++)
+			for (int i = 0; i < rozmiar; i++)
 			{
-				for (int k = 0; k < plansza.size(); k++)
+				for (int k = 0; k < rozmiar; k++)
 				{
 					if ((*plansza[i])[k]->getPionek() == kolor)
 					{
@@ -288,9 +286,9 @@ bool PlanszaHEX::CzyPlanszaMozliwa()
 
 void PlanszaHEX::ResetOdwiedziny()
 {
-	for (int i = 0; i < plansza.size(); i++)
+	for (int i = 0; i < rozmiar; i++)
 	{
-		for (int k = 0; k < plansza.size(); k++)
+		for (int k = 0; k < rozmiar; k++)
 		{
 			(*plansza[i])[k]->setOdwiedzony(false);
 		}
@@ -313,263 +311,266 @@ int PlanszaHEX::getLiczbaPustychPol()
 	return liczbaPustePola;
 }
 
+int PlanszaHEX::GraSkonczona(int kolor)
+{
 
-bool PlanszaHEX::CzerwonyWJednymRuchu() {
-	if (CzyPlanszaMozliwa())
+	ResetOdwiedziny();
+	if (CzyPlanszaPoprawna())
 	{
-		if (liczbaPustePola >=1 && Tura() == czerwony)
-		{
-			for (int i = 0; i < getRozmiarPlanszy(); i++)
+		
+		for (int i = 0; i < rozmiar; ++i) {
+			if (kolor == czerwony && (*plansza[0])[i]->getPionek() == czerwony && !(*plansza[0])[i]->getOdwiedzony())
 			{
-				for (int k = 0; k < getRozmiarPlanszy(); k++)
+				if (CzerwonyDFS(0, i))
 				{
-					if ((*plansza[i])[k]->getPionek() == pusty)
-					{
-						(*plansza[i])[k]->setPionek(czerwony);
-						if (CzerwonyWygral())
-						{
-							(*plansza[i])[k]->setPionek(pusty);
-							return true;
-						}
-						(*plansza[i])[k]->setPionek(pusty);
-					}
+					return 1;
+				}
+			}
+			if (kolor == niebieski && (*plansza[i])[0]->getPionek() == niebieski && !(*plansza[i])[0]->getOdwiedzony())
+			{
+				if (NiebieskiDFS(i, 0)) {
+					return 2;
+
 				}
 			}
 		}
-		else if (liczbaPustePola >= 2 && Tura() == niebieski)
+
+		
+	}
+
+	return 0;
+
+}
+
+
+
+
+bool PlanszaHEX::NiebieskiTuraNiebieski1Naiwny()
+{
+	for (int i = 0; i < rozmiar; i++)
+	{
+		for (int k = 0; k < rozmiar; k++)
 		{
-			for (int i = 0; i < getRozmiarPlanszy(); i++)
+			if ((*plansza[i])[k]->getPionek() == pusty)
 			{
-				for (int k = 0; k < getRozmiarPlanszy(); k++)
+				(*plansza[i])[k]->setPionek(niebieski);
+				liczbaNiebieskichPionkow++;
+				if (GraSkonczona(niebieski))
 				{
-					if ((*plansza[i])[k]->getPionek() == pusty)
-					{
-						(*plansza[i])[k]->setPionek(czerwony);
-						if (CzerwonyWygral())
-						{
-							(*plansza[i])[k]->setPionek(pusty);
-							return true;
-						}
-						(*plansza[i])[k]->setPionek(pusty);
-					}
+					(*plansza[i])[k]->setPionek(pusty);
+					liczbaNiebieskichPionkow--;
+					return true;
 				}
+				(*plansza[i])[k]->setPionek(pusty);
+				liczbaNiebieskichPionkow--;
 			}
 		}
 	}
 	return false;
 }
 
-bool PlanszaHEX::NiebieskiWJednymRuchu()
+bool PlanszaHEX::NiebieskiTuraCzerwony1Naiwny()
 {
-	if (CzyPlanszaMozliwa())
+	liczbaCzerwonychPionkow++;
+	if (liczbaNiebieskichPionkow + liczbaCzerwonychPionkow + 1 <= rozmiar * rozmiar && NiebieskiTuraNiebieski1Naiwny())
 	{
-		if (liczbaPustePola >= 1 && Tura() == niebieski)
+		liczbaCzerwonychPionkow--;
+		return true;
+	}
+	liczbaCzerwonychPionkow--;
+	return false;
+}
+
+
+bool PlanszaHEX::CzerwonyTuraNiebieski1Naiwny()
+{
+	liczbaNiebieskichPionkow++;
+	if (liczbaNiebieskichPionkow + liczbaCzerwonychPionkow + 1 <= rozmiar * rozmiar && CzerwonyTuraCzerwony1Naiwny())
+	{
+		liczbaNiebieskichPionkow--;
+		return true;
+	}
+	liczbaNiebieskichPionkow--;
+	return false;
+}
+
+bool PlanszaHEX::CzerwonyTuraCzerwony1Naiwny()
+{
+	for (int i = 0; i < rozmiar; i++)
+	{
+		for (int k = 0; k < rozmiar; k++)
 		{
-			for (int i = 0; i < getRozmiarPlanszy(); i++)
+			if ((*plansza[i])[k]->getPionek() == pusty)
 			{
-				for (int k = 0; k < getRozmiarPlanszy(); k++)
+				(*plansza[i])[k]->setPionek(czerwony);
+				liczbaCzerwonychPionkow++;
+				if (GraSkonczona() == 1)
 				{
-					if ((*plansza[i])[k]->getPionek() == pusty)
-					{
-						(*plansza[i])[k]->setPionek(niebieski);
-						if (NiebiskiWygral())
-						{
-							(*plansza[i])[k]->setPionek(pusty);
-							return true;
-						}
-						(*plansza[i])[k]->setPionek(pusty);
-					}
+					(*plansza[i])[k]->setPionek(pusty);
+					liczbaCzerwonychPionkow--;
+					return true;
 				}
-			}
-		}
-		else if (liczbaPustePola >= 2 && Tura() == czerwony)
-		{
-			for (int i = 0; i < getRozmiarPlanszy(); i++)
-			{
-				for (int k = 0; k < getRozmiarPlanszy(); k++)
-				{
-					if ((*plansza[i])[k]->getPionek() == pusty)
-					{
-						(*plansza[i])[k]->setPionek(niebieski);
-						if (NiebiskiWygral())
-						{
-							(*plansza[i])[k]->setPionek(pusty);
-							return true;
-						}
-						(*plansza[i])[k]->setPionek(pusty);
-					}
-				}
+				(*plansza[i])[k]->setPionek(pusty);
+				liczbaCzerwonychPionkow--;
 			}
 		}
 	}
 	return false;
 }
 
-bool PlanszaHEX::CzerwonyWDwochRuchach()
+bool PlanszaHEX::NiebieskiTuraNiebieski2Naiwny()
 {
-	if (CzyPlanszaMozliwa())
+	for (int i = 0; i < rozmiar; i++)
 	{
-		if (Tura() == czerwony && liczbaPustePola >= 3)
+		for (int k = 0; k < rozmiar; k++)
 		{
-			for (int i = 0; i < getRozmiarPlanszy(); i++)
+			if ((*plansza[i])[k]->getPionek() == pusty)
 			{
-				for (int k = 0; k < getRozmiarPlanszy(); k++)
+				(*plansza[i])[k]->setPionek(niebieski);
+				liczbaNiebieskichPionkow++;
+				if (!GraSkonczona() && NiebieskiTuraCzerwony1Naiwny())
 				{
-					if ((*plansza[i])[k]->getPionek() == pusty)
-					{
-						(*plansza[i])[k]->setPionek(czerwony);
-						if (CzerwonyWygral())
-						{
-							(*plansza[i])[k]->setPionek(pusty);
-							
-						}
-						else {
-							for (int l = 0; l < getRozmiarPlanszy(); l++)
-							{
-								for (int o = 0; o < getRozmiarPlanszy(); o++)
-								{
-									if ((*plansza[l])[o]->getPionek() == pusty) 
-									{
-										(*plansza[l])[o]->setPionek(czerwony);
-										if (CzerwonyWygral())
-										{
-											(*plansza[i])[k]->setPionek(pusty);
-											(*plansza[l])[o]->setPionek(pusty);
-											return true;
-										}
-										(*plansza[l])[o]->setPionek(pusty);
-									}
-								}
-							}
-						}
-						(*plansza[i])[k]->setPionek(pusty);
-					}
+					(*plansza[i])[k]->setPionek(pusty);
+					liczbaNiebieskichPionkow--;
+					return true;
 				}
-			}
-		}
-		else if (Tura() == niebieski && liczbaPustePola >= 4)
-		{
-			for (int i = 0; i < getRozmiarPlanszy(); i++)
-			{
-				for (int k = 0; k < getRozmiarPlanszy(); k++)
-				{
-					if ((*plansza[i])[k]->getPionek() == pusty)
-					{
-						(*plansza[i])[k]->setPionek(czerwony);
-						if (CzerwonyWygral())
-						{
-							(*plansza[i])[k]->setPionek(pusty);
-
-						}
-						else {
-							for (int l = 0; l < getRozmiarPlanszy(); l++)
-							{
-								for (int o = 0; o < getRozmiarPlanszy(); o++)
-								{
-									if ((*plansza[l])[o]->getPionek() == pusty)
-									{
-										(*plansza[l])[o]->setPionek(czerwony);
-										if (CzerwonyWygral())
-										{
-											(*plansza[i])[k]->setPionek(pusty);
-											(*plansza[l])[o]->setPionek(pusty);
-											return true;
-										}
-										(*plansza[l])[o]->setPionek(pusty);
-									}
-								}
-							}
-						}
-						(*plansza[i])[k]->setPionek(pusty);
-					}
-				}
+				(*plansza[i])[k]->setPionek(pusty);
+				liczbaNiebieskichPionkow--;
 			}
 		}
 	}
 	return false;
 }
 
-bool PlanszaHEX::NiebieskiWDwochRuchach()
+bool PlanszaHEX::NiebieskiTuraCzerwony2Naiwny()
 {
-	if (CzyPlanszaMozliwa())
+	liczbaCzerwonychPionkow++;
+	if (liczbaNiebieskichPionkow + liczbaCzerwonychPionkow + 3 <= rozmiar * rozmiar && NiebieskiTuraNiebieski2Naiwny())
 	{
-		if (Tura() == niebieski && liczbaPustePola >= 3)
-		{
-			for (int i = 0; i < getRozmiarPlanszy(); i++)
-			{
-				for (int k = 0; k < getRozmiarPlanszy(); k++)
-				{
-					if ((*plansza[i])[k]->getPionek() == pusty)
-					{
-						(*plansza[i])[k]->setPionek(niebieski);
-						if (NiebiskiWygral())
-						{
-							(*plansza[i])[k]->setPionek(pusty);
+		liczbaCzerwonychPionkow--;
+		return true;
+	}
+	liczbaCzerwonychPionkow--;
+	return false;
+}
 
-						}
-						else {
-							for (int l = 0; l < getRozmiarPlanszy(); l++)
-							{
-								for (int o = 0; o < getRozmiarPlanszy(); o++)
-								{
-									if ((*plansza[l])[o]->getPionek() == pusty)
-									{
-										(*plansza[l])[o]->setPionek(niebieski);
-										if (NiebiskiWygral())
-										{
-											(*plansza[i])[k]->setPionek(pusty);
-											(*plansza[l])[o]->setPionek(pusty);
-											return true;
-										}
-										(*plansza[l])[o]->setPionek(pusty);
-									}
-								}
-							}
-						}
-						(*plansza[i])[k]->setPionek(pusty);
-					}
-				}
-			}
-		}
-		else if (Tura() == czerwony && liczbaPustePola >= 4)
-		{
-			for (int i = 0; i < getRozmiarPlanszy(); i++)
-			{
-				for (int k = 0; k < getRozmiarPlanszy(); k++)
-				{
-					if ((*plansza[i])[k]->getPionek() == pusty)
-					{
-						(*plansza[i])[k]->setPionek(niebieski);
-						if (NiebiskiWygral())
-						{
-							(*plansza[i])[k]->setPionek(pusty);
+bool PlanszaHEX::CzerwonyTuraNiebieski2Naiwny()
+{
+	liczbaNiebieskichPionkow++;
+	if (liczbaNiebieskichPionkow + liczbaCzerwonychPionkow + 3 <= rozmiar * rozmiar && CzerwonyTuraCzerwony2Naiwny())
+	{
+		liczbaNiebieskichPionkow--;
+		return true;
+	}
+	liczbaNiebieskichPionkow--;
+	return false;
+}
 
-						}
-						else {
-							for (int l = 0; l < getRozmiarPlanszy(); l++)
-							{
-								for (int o = 0; o < getRozmiarPlanszy(); o++)
-								{
-									if ((*plansza[l])[o]->getPionek() == pusty)
-									{
-										(*plansza[l])[o]->setPionek(niebieski);
-										if (NiebiskiWygral())
-										{
-											(*plansza[i])[k]->setPionek(pusty);
-											(*plansza[l])[o]->setPionek(pusty);
-											return true;
-										}
-										(*plansza[l])[o]->setPionek(pusty);
-									}
-								}
-							}
-						}
-						(*plansza[i])[k]->setPionek(pusty);
-					}
+bool PlanszaHEX::CzerwonyTuraCzerwony2Naiwny()
+{
+	for (int i = 0; i < rozmiar; i++)
+	{
+		for (int k = 0; k < rozmiar; k++)
+		{
+			if ((*plansza[i])[k]->getPionek() == pusty)
+			{
+
+				(*plansza[i])[k]->setPionek(czerwony);
+				liczbaCzerwonychPionkow++;
+				if (!GraSkonczona() && CzerwonyTuraNiebieski1Naiwny())
+				{
+					(*plansza[i])[k]->setPionek(pusty);
+					liczbaCzerwonychPionkow--;
+					return true;
 				}
+				(*plansza[i])[k]->setPionek(pusty);
+				liczbaCzerwonychPionkow--;
 			}
 		}
 	}
+	return false;
+}
+
+bool PlanszaHEX::CzerwonyWJednymRuchuNaiwny() {
+	int tura = Tura();
+		if (tura == czerwony)
+		{
+			if (CzerwonyTuraCzerwony1Naiwny())
+			{
+				return true;
+			}
+		}
+		else if (tura == niebieski)
+		{
+			if (CzerwonyTuraNiebieski1Naiwny())
+			{
+				return true;
+			}
+		}
+	
+	return false;
+}
+
+bool PlanszaHEX::NiebieskiWJednymRuchuNaiwny()
+{
+	int tura = Tura();
+		if (tura == niebieski)
+		{
+			if (NiebieskiTuraNiebieski1Naiwny())
+			{
+				return true;
+			}
+		}
+		else if (tura == czerwony)
+		{
+			if (NiebieskiTuraCzerwony1Naiwny())
+			{
+				return true;
+			}
+		}
+	
+	return false;
+}
+
+bool PlanszaHEX::CzerwonyWDwochRuchachNaiwny()
+{
+	int tura = Tura();
+		if (tura == czerwony)
+		{
+			if (CzerwonyTuraCzerwony2Naiwny())
+			{
+				return true;
+			}
+		}
+		else if (tura == niebieski)
+		{
+			if (CzerwonyTuraNiebieski2Naiwny())
+			{
+				return true;
+			}
+		}
+	
+	return false;
+}
+
+bool PlanszaHEX::NiebieskiWDwochRuchachNaiwny()
+{
+	int tura = Tura();
+		if (tura == niebieski)
+		{
+			if (NiebieskiTuraNiebieski2Naiwny())
+			{
+				return true;
+			}
+		}
+		else if (tura == czerwony)
+		{
+			if (NiebieskiTuraCzerwony2Naiwny())
+			{
+				return true;
+			}
+		}
+	
 	return false;
 
 }
@@ -582,10 +583,12 @@ void PlanszaHEX::NaiwnyPrzeciwnik()
 	std::cin >> input;
 	std::cin >> input;
 	std::cin >> input;
+	int win = GraSkonczona();
+	bool b = CzyPlanszaPoprawna();
 
 	//std::cout << GraSkonczona();
 
-	if (GraSkonczona() == 0 && CzerwonyWJednymRuchu() )
+	if (b && win == 0 && CzerwonyWJednymRuchuNaiwny() )
 	{
 		std::cout << "YES";
 	}
@@ -593,7 +596,7 @@ void PlanszaHEX::NaiwnyPrzeciwnik()
 		std::cout << "NO";
 	}
 	std::cout << "\n";
-	if (GraSkonczona() == 0 && NiebieskiWJednymRuchu())
+	if (b && win == 0 && NiebieskiWJednymRuchuNaiwny())
 	{
 		std::cout << "YES";
 	}
@@ -601,7 +604,7 @@ void PlanszaHEX::NaiwnyPrzeciwnik()
 		std::cout << "NO";
 	}
 	std::cout << "\n";
-	if (GraSkonczona() == 0 && CzerwonyWDwochRuchach())
+	if (b && win == 0 && CzerwonyWDwochRuchachNaiwny())
 	{
 		std::cout << "YES";
 	}
@@ -609,7 +612,7 @@ void PlanszaHEX::NaiwnyPrzeciwnik()
 		std::cout << "NO";
 	}
 	std::cout << "\n";
-	if (GraSkonczona() == 0 && NiebieskiWDwochRuchach())
+	if (b && win == 0 && NiebieskiWDwochRuchachNaiwny())
 	{
 		std::cout << "YES";
 	}
@@ -617,8 +620,443 @@ void PlanszaHEX::NaiwnyPrzeciwnik()
 		std::cout << "NO";
 	}
 
+}
+
+void PlanszaHEX::PerfekcyjnyPrzeciwnik()
+{
+
+	std::string input;
+
+	std::cin >> input;
+	std::cin >> input;
+	std::cin >> input;
+	int win = GraSkonczona();
+	bool b = CzyPlanszaPoprawna();
 
 
+	//std::cout << GraSkonczona();
 
+	if (b && win == 0 && CzerwonyWJednymRuchuPerfekcyjny())
+	{
+		std::cout << "YES";
+	}
+	else {
+		std::cout << "NO";
+	}
+	std::cout << "\n";
+	if (b && win == 0 && NiebieskiWJednymRuchuPerfekcyjny())
+	{
+		std::cout << "YES";
+	}
+	else {
+		std::cout << "NO";
+	}
+	std::cout << "\n";
+	if (b && win == 0 && CzerwonyWDwochRuchachPerfekcyjny())
+	{
+		std::cout << "YES";
+	}
+	else {
+		std::cout << "NO";
+	}
+	std::cout << "\n";
+	if (b && win == 0 && NiebieskiWDwochRuchachPerfekcyjny())
+	{
+		std::cout << "YES";
+	}
+	else {
+		std::cout << "NO";
+	}
+}
 
+PlanszaHEX::~PlanszaHEX()
+{
+	for (int i = 0; i < plansza.size(); i++)
+	{
+		for (int k = 0; k < plansza.size(); k++)
+		{
+			delete (*plansza[i])[k];
+		}
+		delete plansza[i];
+	}
+}
+
+bool PlanszaHEX::CzerwonyTuraNiebieski2Perfekcyjny()
+{
+	if (NiebieskiTuraNiebieski1Perfekcyjny())
+	{
+		return false;
+	}
+	for (int i = 0; i < rozmiar; i++)
+	{
+		for (int k = 0; k < rozmiar; k++)
+		{
+			if ((*plansza[i])[k]->getPionek() == pusty)
+			{
+				(*plansza[i])[k]->setPionek(czerwony);
+				liczbaCzerwonychPionkow++;
+				if (GraSkonczona(czerwony) == 0)
+				{
+					(*plansza[i])[k]->setPionek(niebieski);
+					liczbaNiebieskichPionkow++;
+					liczbaCzerwonychPionkow--;
+					if (!CzerwonyTuraCzerwony2Perfekcyjny())
+					{
+						(*plansza[i])[k]->setPionek(pusty);
+						liczbaNiebieskichPionkow--;
+						return false;
+					}
+					(*plansza[i])[k]->setPionek(pusty);
+					liczbaNiebieskichPionkow--;
+				}
+				else
+				{
+					(*plansza[i])[k]->setPionek(pusty);
+					liczbaCzerwonychPionkow--;
+				}
+			}
+		}
+	}
+
+	for (int i = 0; i < rozmiar; i++)
+	{
+		for (int k = 0; k < rozmiar; k++)
+		{
+			if ((*plansza[i])[k]->getPionek() == pusty)
+			{
+				(*plansza[i])[k]->setPionek(niebieski);
+				liczbaNiebieskichPionkow++;
+				if (!CzerwonyTuraCzerwony2Perfekcyjny())
+				{
+					(*plansza[i])[k]->setPionek(pusty);
+					liczbaNiebieskichPionkow--;
+					return false;
+				}
+				(*plansza[i])[k]->setPionek(pusty);
+				liczbaNiebieskichPionkow--;
+			}
+		}
+	}
+	return true;
+}
+
+bool PlanszaHEX::CzerwonyTuraCzerwony2Perfekcyjny()
+{
+	for (int i = 0; i < rozmiar; i++)
+	{
+		for (int k = 0; k < rozmiar; k++)
+		{
+			if ((*plansza[i])[k]->getPionek()  == pusty)
+			{
+				(*plansza[i])[k]->setPionek(czerwony);
+				liczbaCzerwonychPionkow++;
+				if (GraSkonczona(czerwony) == 0 && CzerwonyTuraNiebieski1Perfekcyjny())
+				{
+					liczbaCzerwonychPionkow--;
+					(*plansza[i])[k]->setPionek(pusty);
+					return true;
+				}
+				(*plansza[i])[k]->setPionek(pusty);
+				liczbaCzerwonychPionkow--;
+			}
+		}
+	}
+	return false;
+}
+
+bool PlanszaHEX::CzerwonyWJednymRuchuPerfekcyjny()
+{
+	int tura = Tura();
+	if (tura == czerwony)
+	{
+		if (CzerwonyTuraCzerwony1Perfekcyjny())
+		{
+			return true;
+		}
+	}
+	else if (tura == niebieski)
+	{
+		if (CzerwonyTuraNiebieski1Perfekcyjny())
+		{
+			return true;
+		}
+	}
+	return false;
+}
+
+bool PlanszaHEX::NiebieskiWJednymRuchuPerfekcyjny()
+{
+	int tura = Tura();
+	if (tura == niebieski)
+	{
+		if (NiebieskiTuraNiebieski1Perfekcyjny())
+		{
+			return true;
+		}
+	}
+	else if (tura == czerwony)
+	{
+		if (NiebieskiTuraCzerwony1Perfekcyjny())
+		{
+			return true;
+		}
+	}
+	return false;
+}
+
+bool PlanszaHEX::CzerwonyWDwochRuchachPerfekcyjny()
+{
+	int tura = Tura();
+	if (tura == czerwony)
+	{
+		if (CzerwonyTuraCzerwony2Perfekcyjny())
+		{
+			return true;
+		}
+	}
+	else if (tura == niebieski)
+	{
+		if (CzerwonyTuraNiebieski2Perfekcyjny())
+		{
+			return true;
+		}
+	}
+	return false;
+}
+
+bool PlanszaHEX::NiebieskiWDwochRuchachPerfekcyjny()
+{
+	int tura = Tura();
+	if (tura == niebieski)
+	{
+		if (NiebieskiTuraNiebieski2Perfekcyjny())
+		{
+			return true;
+		}
+	}
+	else if (tura == czerwony)
+	{
+		if (NiebieskiTuraCzerwony2Perfekcyjny())
+		{
+			return true;
+		}
+	}
+	return false;
+}
+
+bool PlanszaHEX::NiebieskiTuraNiebieski1Perfekcyjny()
+{
+	if (NiebieskiTuraNiebieski1Naiwny())
+	{
+		return true;
+	}
+	return false;
+}
+
+bool PlanszaHEX::NiebieskiTuraCzerwony1Perfekcyjny()
+{
+	if (CzerwonyTuraCzerwony1Naiwny())
+	{
+		return false;
+	}
+	for (int i = 0; i < rozmiar; i++)
+	{
+		for (int k = 0; k < rozmiar; k++)
+		{
+			if ((*plansza[i])[k]->getPionek() == pusty)
+			{
+				(*plansza[i])[k]->setPionek(niebieski);
+				liczbaNiebieskichPionkow++;
+				if (GraSkonczona(niebieski))
+				{
+					(*plansza[i])[k]->setPionek(czerwony);
+					liczbaCzerwonychPionkow++;
+					liczbaNiebieskichPionkow--;
+					if (!NiebieskiTuraNiebieski1Perfekcyjny())
+					{
+						liczbaCzerwonychPionkow--;
+						(*plansza[i])[k]->setPionek(pusty);
+						return false;
+					}
+					liczbaCzerwonychPionkow--;
+					(*plansza[i])[k]->setPionek(pusty);
+				}
+				else {
+					liczbaNiebieskichPionkow--;
+					(*plansza[i])[k]->setPionek(pusty);
+				}
+			}
+		}
+	}
+
+	for (int i = 0; i < rozmiar; i++)
+	{
+		for (int k = 0; k < rozmiar; k++)
+		{
+			if ((*plansza[i])[k]->getPionek() == pusty)
+			{
+				(*plansza[i])[k]->setPionek(czerwony);
+				liczbaCzerwonychPionkow++;
+				if (!NiebieskiTuraNiebieski1Perfekcyjny())
+				{
+					liczbaCzerwonychPionkow--;
+					(*plansza[i])[k]->setPionek(pusty);
+					return false;
+				}
+				liczbaCzerwonychPionkow--;
+				(*plansza[i])[k]->setPionek(pusty);
+			}
+		}
+	}
+	return true;
+}
+
+bool PlanszaHEX::CzerwonyTuraNiebieski1Perfekcyjny()
+{
+	if (NiebieskiTuraNiebieski1Naiwny())
+	{
+		return false;
+	}
+	for (int i = 0; i < rozmiar; i++)
+	{
+		for (int k = 0; k < rozmiar; k++)
+		{
+			if ((*plansza[i])[k]->getPionek() == pusty)
+			{
+				(*plansza[i])[k]->setPionek(czerwony); 
+				liczbaCzerwonychPionkow++;
+				if (GraSkonczona(czerwony))
+				{
+					(*plansza[i])[k]->setPionek(niebieski);
+					liczbaNiebieskichPionkow++;
+					liczbaCzerwonychPionkow--;
+					if (!CzerwonyTuraCzerwony1Perfekcyjny())
+					{
+						liczbaNiebieskichPionkow--;
+						(*plansza[i])[k]->setPionek(pusty);
+						return false;
+					}
+					liczbaNiebieskichPionkow--;
+					(*plansza[i])[k]->setPionek(pusty);
+				}
+				else {
+					liczbaCzerwonychPionkow--;
+					(*plansza[i])[k]->setPionek(pusty);
+				}
+			}
+		}
+	}
+
+	for (int i = 0; i < rozmiar; i++)
+	{
+		for (int k = 0; k < rozmiar; k++)
+		{
+			if ((*plansza[i])[k]->getPionek() == pusty) 
+			{
+				(*plansza[i])[k]->setPionek(niebieski);
+				liczbaNiebieskichPionkow++;
+				if (!CzerwonyTuraCzerwony1Perfekcyjny())
+				{
+					liczbaNiebieskichPionkow--;
+					(*plansza[i])[k]->setPionek(pusty);
+					return false;
+				}
+				liczbaNiebieskichPionkow--;
+				(*plansza[i])[k]->setPionek(pusty);
+			}
+		}
+	}
+	return true;
+}
+
+bool PlanszaHEX::CzerwonyTuraCzerwony1Perfekcyjny()
+{
+	if (CzerwonyTuraCzerwony1Naiwny())
+	{
+		return true;
+	}
+	return false;
+}
+
+bool PlanszaHEX::NiebieskiTuraNiebieski2Perfekcyjny()
+{
+	for (int i = 0; i < rozmiar; i++)
+	{
+		for (int k = 0; k < rozmiar; k++)
+		{
+			if ((*plansza[i])[k]->getPionek() == pusty)
+			{
+				(*plansza[i])[k]->setPionek(niebieski);
+				liczbaNiebieskichPionkow++;
+				if (GraSkonczona(niebieski) == 0 && NiebieskiTuraCzerwony1Perfekcyjny())				
+				{
+					liczbaNiebieskichPionkow--;
+					(*plansza[i])[k]->setPionek(pusty);
+					return true;
+				}
+				(*plansza[i])[k]->setPionek(pusty);
+				liczbaNiebieskichPionkow--;
+			}
+		}
+	}
+	return false;
+}
+
+bool PlanszaHEX::NiebieskiTuraCzerwony2Perfekcyjny()
+{
+	if (CzerwonyTuraCzerwony1Perfekcyjny())
+	{
+		return false;
+	}
+	for (int i = 0; i < rozmiar; i++)
+	{
+		for (int k = 0; k < rozmiar; k++)
+		{
+			if ((*plansza[i])[k]->getPionek() == pusty)
+			{
+				(*plansza[i])[k]->setPionek(niebieski);
+				liczbaNiebieskichPionkow++;
+				if (GraSkonczona(niebieski) == 0)
+				{
+					(*plansza[i])[k]->setPionek(czerwony);
+					liczbaCzerwonychPionkow++;
+					liczbaNiebieskichPionkow--;
+					if (!NiebieskiTuraNiebieski2Perfekcyjny())
+					{
+						(*plansza[i])[k]->setPionek(pusty);
+						liczbaCzerwonychPionkow--;
+						return false;
+					}
+					(*plansza[i])[k]->setPionek(pusty);
+					liczbaCzerwonychPionkow--;
+				}
+				else
+				{
+					(*plansza[i])[k]->setPionek(pusty);
+					liczbaNiebieskichPionkow--;
+				}
+			}
+		}
+	}
+
+	for (int i = 0; i < rozmiar; i++)
+	{
+		for (int k = 0; k < rozmiar; k++)
+		{
+			if ((*plansza[i])[k]->getPionek() == pusty)
+			{
+				(*plansza[i])[k]->setPionek(czerwony);
+				liczbaCzerwonychPionkow++;
+				if (!NiebieskiTuraNiebieski2Perfekcyjny())
+				{
+					(*plansza[i])[k]->setPionek(pusty);
+					liczbaCzerwonychPionkow--;
+					return false;
+				}
+				(*plansza[i])[k]->setPionek(pusty);
+				liczbaCzerwonychPionkow--;
+			}
+		}
+	}
+	return true;
 }

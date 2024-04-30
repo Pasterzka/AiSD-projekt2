@@ -12,7 +12,7 @@ int main()
 	PlanszaHEX* plansza = nullptr;
 	int testy = 1;
 
-	for (int i = 0; i < testy; i++)
+	while(std::cin >> input)
 	{
 		plansza = new PlanszaHEX();
 		//std::cout << plansza->getLiczbaPustychPol() << " " << plansza->getLiczbaCzerownychPionkow() << " " << plansza->getLiczbaNiebieskichPionkow() << " " << plansza->GraSkonczona() << " ";
@@ -73,20 +73,27 @@ int main()
 			testy = 1206;
 			plansza->NaiwnyPrzeciwnik();
 		}
+		else if (input == "CAN_RED_WIN_IN_1_MOVE_WITH_PERFECT_OPPONENT")
+		{
+			plansza->PerfekcyjnyPrzeciwnik();
+		}
 		delete plansza;
 		std::cout << "\n\n";
 	}
 	return 0;
 }
 /*
-          ---
-       --< b >--
-    --<   >-< r >--
- --< b >-< r >-< b >--
-< b >-< r >-< b >-< r >
+		  ---
+	   --<   >--
+	--< b >-< b >--
+ --<   >-<   >-< r >--
+< b >-< r >-<   >-<   >
  --<   >-< b >-< r >--
-     --< r >-< r >--
-        --< b >--
-           ---
-IS_GAME_OVER
+	--< b >-< r >--
+	   --< r >--
+		  ---
+CAN_RED_WIN_IN_1_MOVE_WITH_PERFECT_OPPONENT
+CAN_BLUE_WIN_IN_1_MOVE_WITH_PERFECT_OPPONENT
+CAN_RED_WIN_IN_2_MOVES_WITH_PERFECT_OPPONENT
+CAN_BLUE_WIN_IN_2_MOVES_WITH_PERFECT_OPPONENT
 */

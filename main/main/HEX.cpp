@@ -6,6 +6,12 @@ HEX::HEX(int kolor)
 	odwiedzony = false;
 }
 
+HEX::HEX()
+{
+	pionek = 0;
+	odwiedzony = false;
+}
+
 int HEX::getPionek()
 {
 	return this->pionek;

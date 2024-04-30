@@ -1,9 +1,2 @@
-﻿  PlanszaHEX.cpp
-D:\STUDIA\AIDS\Projekty\2\main\main\PlanszaHEX.cpp(89,85): warning C4267: "=": konwersja z "size_t" do "int", możliwa utrata danych
-D:\STUDIA\AIDS\Projekty\2\main\main\PlanszaHEX.cpp(114,27): warning C4267: "return": konwersja z "size_t" do "int", możliwa utrata danych
-D:\STUDIA\AIDS\Projekty\2\main\main\PlanszaHEX.cpp(193,10): warning C4267: "inicjowanie": konwersja z "size_t" do "int", możliwa utrata danych
-D:\STUDIA\AIDS\Projekty\2\main\main\PlanszaHEX.cpp(220,9): warning C4267: "inicjowanie": konwersja z "size_t" do "int", możliwa utrata danych
-D:\STUDIA\AIDS\Projekty\2\main\main\PlanszaHEX.cpp(234,9): warning C4267: "inicjowanie": konwersja z "size_t" do "int", możliwa utrata danych
-  main.cpp
-  Generowanie kodu...
+﻿  main.cpp
   main.vcxproj -> D:\STUDIA\AIDS\Projekty\2\main\x64\Debug\main.exe
